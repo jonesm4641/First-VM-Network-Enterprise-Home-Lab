@@ -1,0 +1,6 @@
+6. Creating Servers (in this order)
+
+File Server (Samba for Linux, create Windows File Share)
+Database Server
+Fix DNS Server (Computers can't join Domain)
+Join Linux Machines to Domain

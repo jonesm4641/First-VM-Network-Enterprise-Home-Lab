@@ -1,0 +1,17 @@
+1. Install SSH:
+sudo apt update && sudo apt install -y openssh-server
+
+2. Start the SSH service:
+sudo systemctl start ssh
+sudo systemctl enable ssh
+
+3. Verify SSH is running:
+sudo systemctl status ssh
+
+4. Allow SSH in Firewall 
+sudo ufw allow 22/tcp
+sudo ufw enable
+
+5. Ping
+
+6. SSH into remote machine 

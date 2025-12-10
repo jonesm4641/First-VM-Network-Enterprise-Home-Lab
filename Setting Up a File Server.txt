@@ -1,0 +1,97 @@
+1. Install Samba
+sudo apt install samba -y
+
+2. Create a Shared Directory
+sudo mkdir -p /srv/samba/shared
+sudo chown -R nobody:nogroup /srv/samba/shared
+sudo chmod -R 0777 /srv/samba/shared
+
+3. Configure Samba
+
+sudo vim /etc/samba/smb.conf
+
+[Shared]  "<<<<<<<<<<NAME OF THE FILE SHARE!!!"
+   path = /srv/samba/shared
+   browseable = yes
+   read only = no
+   guest ok = yes
+
+4. Restart Samba
+sudo systemctl restart smbd
+
+-----------------------------------------------------------------------------------------------------------------------------
+
+TO DISABLE GUEST ACCESS IN SAMBA AND REQUIRE AUTHENICATED USER ACCESS
+
+
+Remove Guest Access
+
+1. Open the Samba configuration file:
+sudo vim /etc/samba/smb.conf
+
+2. Find the [Shared] section (or the share name you created) and modify it as follows:
+[Shared]     "<<<<<<<<<<NAME OF THE FILE SHARE!!!"
+path = /srv/samba/shared
+browseable = yes
+read only = no
+valid users = @smbgroup
+force group = smbgroup
+create mask = 0660
+directory mask = 0770
+guest ok = no
+
+
+Create A Samba User
+
+1. Create a system user (if not already created):
+sudo adduser smbuser
+
+2. Add user to Samba:
+sudo smbpasswd -a smbuser
+
+3. sudo groupadd smbgroup
+sudo usermod -aG smbgroup smbuser
+
+
+Adjust Folder Permissions
+
+1. Ensure that only authenticated users have access:
+sudo chown -R smbuser:smbgroup /srv/samba/shared
+sudo chmod -R 770 /srv/samba/shared
+
+2. Apply the changes by restarting Samba:
+sudo systemctl restart smbd
+sudo systemctl restart nmbd
+
+------------------------------------------------------------------------------------------------------------------------
+
+NT_STATUS_ACCESS_DENIED
+
+1. Ensure Samba User Exists
+sudo pdbedit -L
+
+If user doesn't exist:
+sudo smbpasswd -a smbuser
+
+2. Set Correct Samba Share Permissions
+ls -ld /srv/samba/shared
+sudo chown -R smbuser:smbgroup /srv/samba/shared
+sudo chmod -R 770 /srv/samba/shared
+
+3. Restart Samba Services
+sudo systemctl restart smbd
+sudo systemctl restart nmbd
+
+4. Access Samba File Share
+smbclient //192.168.50.2/Shared -U smbuser
+
+5. Mount (Optional)
+sudo mount -t cifs -o username=smbuser,password=YourSambaPassword //192.168.50.2/Shared ~/sambashare
+
+6. Verify Mount
+ls ~/sambashare
+
+
+
+
+
